@@ -19,11 +19,13 @@ api = tweepy.API(auth) #twitter api
 client = ImgurClient('1631ebda1e42fa1', 'ed3c068eca8ee531da305d9fb06d1ccca23e21b8') #imgur api
 
 
-NUMBER_TWEETS = 50
+NUMBER_TWEETS = 100
 hashtag = input()
 tweet_counter = 0
 words = collections.Counter()
 filtered_words = {"a", "A", "I", "the", "The", "and", "that", "in", "on", "to", "but", "at", "an", "for", "of", "&amp", hashtag}
+positive_words = {"Good", "good", "Amazing", "amazing", "Wonderful", "wonderful"}
+negative_words = {"Bad", "bad", "Terrible", "terrible", "Awful", "awful", "Fail", "fail", "Failure", "failure", "Creepy", "creepy", "Fake", "fake", "Dishonest", "dishonest", "Horrible", "horrible", "Ruin", "ruin"}
 
 # this for loop gathers a number of tweets specified by 'NUMBER_TWEETS' and adds each one to a json file
 for tweet in tweepy.Cursor(api.search, q=hashtag + '-filter:retweets', tweet_mode='extended').items(NUMBER_TWEETS):
@@ -34,7 +36,8 @@ for tweet in tweepy.Cursor(api.search, q=hashtag + '-filter:retweets', tweet_mod
     outfile.close()
     tweet_counter = tweet_counter + 1
 
-
+p_tweets = 0
+n_tweets = 0
 tweet_counter = 0
 while(tweet_counter < NUMBER_TWEETS):
     scanningfile = "text" + str(tweet_counter) + ".json"
@@ -48,6 +51,16 @@ while(tweet_counter < NUMBER_TWEETS):
     #print(collections.Counter(scanningfile))
     add = collections.Counter(full)
     words = words + add
+    p_count = 0
+    n_count = 0
+    if any(positive_words in scanningfile for positive_words in scanningfile):
+        p_count = p_count + 1
+    if any(negative_words in scanningfile for positive_words in scanningfile):
+        n_count = n_count + 1
+    if (p_count > n_count):
+        p_tweets = p_tweets + 1
+    if(p_count < n_count):
+        n_tweets = n_tweets + 1
     readfile.close()
     tweet_counter = tweet_counter + 1
 
@@ -57,5 +70,7 @@ wordcloud.to_file("wordcloud.png")
 image_path = '/Users/Ethan/PycharmProjects/SLP Twitter Gun/wordcloud.png' # this gives the location of the generated file containing the word cloud to 'image_path'
 image = client.upload_from_path(image_path) # this will upload the wordcloud anonymously to imgur
 print(image['link'])
+posprint = str(p_tweets) + "%"
+negprint = str(n_tweets) + "%"
 
-api.update_status('wordcloud generated for' + ' ' + hashtag + ' ' + image['link'] + ' ' + 'with 0.7 relative_scaling') # have the twitter account for this project tweet out a link to where the wordcloud is hosted on imgur
+api.update_status('wordcloud generated for' + ' ' + hashtag + ' ' + image['link'] + ' ' + posprint + ' of people are tweeting positively about ' + hashtag + ' while ' + negprint + ' of people are tweeting negatively') # have the twitter account for this project tweet out a link to where the wordcloud is hosted on imgur
