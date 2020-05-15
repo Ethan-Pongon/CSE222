@@ -1,2 +1,2 @@
 # CSE222
-This program will take a hashtag as input and then attempt to determine whether there is positive or negative sentiment regarding that topic on Twitter. The program will also output a word cloud built from the various tweets that contained the hashtag entered.
+This program will take a hashtag as input and then attempt to determine whether there is positive or negative sentiment regarding that topic on Twitter. Positive and negative sentiments are identified based on learning done with previous tweets that were manually identified as positive or negative. The program will also output a word cloud built from the various tweets that contained the hashtag entered.
